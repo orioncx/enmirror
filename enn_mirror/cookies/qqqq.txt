@@ -1,0 +1,6 @@
+#LWP-Cookies-2.0
+Set-Cookie3: atoken="uid%3d99307%26iss%3d0%26iscd%3d1%26tkn%3d1f0947f23c5e7ddacb268ba03e732befe84e451a"; path="/"; domain=".en.cx"; path_spec; domain_dot; expires="2014-03-05 18:25:16Z"; HttpOnly=None; version=0
+Set-Cookie3: Domain="demo%2Een%2Ecx"; path="/"; domain="demo.en.cx"; path_spec; expires="2013-04-04 18:25:16Z"; version=0
+Set-Cookie3: GUID="652cbae3%2D92ff%2D48d8%2Dbdae%2D16fc1ddc419c"; path="/"; domain="demo.en.cx"; path_spec; expires="2023-03-05 18:15:00Z"; HttpOnly=None; version=0
+Set-Cookie3: check=1; path="/"; domain="demo.en.cx"; path_spec; expires="2014-03-05 18:25:16Z"; version=0
+Set-Cookie3: lang=en; path="/"; domain="demo.en.cx"; path_spec; expires="2014-03-05 18:15:00Z"; version=0

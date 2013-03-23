@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mirror Admin Page</title>
+</head>
+<body>
+Mirror Admin Page.
+<table>
+<form method="POST" action="{% url admin %}">
+{{ form }}<tr><td>
+    <label for="master_pass">master pass</label></td><td>
+    <input id="master_pass" type="password" name="master_pass"></td></tr>
+    <tr><td colspan="1"><input type="submit" name="create" value="Create"/></td></tr>
+    {% csrf_token %}
+</form></table>
+{{ message }}
+</body>
+</html>

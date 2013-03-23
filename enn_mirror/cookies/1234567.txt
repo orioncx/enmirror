@@ -1,0 +1,5 @@
+#LWP-Cookies-2.0
+Set-Cookie3: Domain="demo%2Een%2Ecx"; path="/"; domain="demo.en.cx"; path_spec; expires="2013-04-04 17:56:56Z"; version=0
+Set-Cookie3: GUID="fb41d8a8%2Dce02%2D43bc%2Db7f4%2Defd9eb2904fc"; path="/"; domain="demo.en.cx"; path_spec; expires="2023-03-05 17:56:56Z"; HttpOnly=None; version=0
+Set-Cookie3: check=1; path="/"; domain="demo.en.cx"; path_spec; expires="2014-03-05 17:56:56Z"; version=0
+Set-Cookie3: lang=en; path="/"; domain="demo.en.cx"; path_spec; expires="2014-03-05 17:56:56Z"; version=0

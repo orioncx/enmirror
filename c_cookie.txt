@@ -1,0 +1,6 @@
+#LWP-Cookies-2.0
+Set-Cookie3: atoken="uid%3d95356%26iss%3d0%26iscd%3d1%26tkn%3debfda8deeb2572a2d7ed937beca535a9089a04ad"; path="/"; domain=".en.cx"; path_spec; domain_dot; expires="2014-03-05 16:25:06Z"; HttpOnly=None; version=0
+Set-Cookie3: Domain="gomel%2Een%2Ecx"; path="/"; domain="gomel.en.cx"; path_spec; expires="2013-04-04 16:30:08Z"; version=0
+Set-Cookie3: GUID="03d2ed1b%2Dbf2c%2D45b1%2Db0b4%2Dd466f0a3dc67"; path="/"; domain="gomel.en.cx"; path_spec; expires="2023-03-05 16:25:06Z"; HttpOnly=None; version=0
+Set-Cookie3: check=1; path="/"; domain="gomel.en.cx"; path_spec; expires="2014-03-05 16:25:06Z"; version=0
+Set-Cookie3: lang=ru; path="/"; domain="gomel.en.cx"; path_spec; expires="2014-03-05 16:25:06Z"; version=0
