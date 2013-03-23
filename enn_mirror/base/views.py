@@ -34,7 +34,7 @@ def _login(model):
     cj.save(filename="enn_mirror/cookies/%s.txt"%model.code)
     return 0
 
-
+@csrf_exempt
 def admin(request):
     c_code = request.POST.get("code")
     if c_code:
@@ -59,9 +59,6 @@ def view_game(request,code):
     game_page = data.read()
     game_page = game_page.decode("utf8","replace").replace("/GameStat.aspx?gid=%s"%mirror.game_id,"http://%s/GameStat.aspx?gid=%s"%(mirror.domain,mirror.game_id)).replace("/gameengines/encounter/play/%s/"%mirror.game_id,"")
 
-#    refresh_links = re.findall("\/gameengines\/encounter\/play\/%s\/\?rnd\=0\,[0-9]+"%mirror.game_id,game_page)
-#    for refresh_link in refresh_links:
-#        game_page=game_page.replace(refresh_link,"")
 
     if game_page.find("error")!=-1 or game_page.find("padT20")!=-1:
         _login(mirror)
