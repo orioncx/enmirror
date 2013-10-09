@@ -63,7 +63,9 @@ def view_game(request, code):
                                       mirror.domain, mirror.game_id)) \
         .replace(
         "/gameengines/encounter/play/%s/" % mirror.game_id, "") \
-        .replace("/LevelStat.aspx", "http://%s/LevelStat.aspx" % mirror.domain)
+        .replace("/LevelStat.aspx", "http://%s/LevelStat.aspx" % mirror.domain)\
+        .replace("/GameDetails.aspx?gid=", "http://%s/GameDetails.aspx?gid=" % mirror.domain)\
+        .replace("/guestbook/messages.aspx?topic=", "http://%s/guestbook/messages.aspx?topic=" % mirror.domain)\
 
     if game_page.find("error") != -1 or game_page.find("padT20") != -1:
         _login(mirror)
