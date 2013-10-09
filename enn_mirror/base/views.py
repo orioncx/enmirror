@@ -61,7 +61,7 @@ def view_game(request, code):
     cj.save(ignore_discard=True, ignore_expires=True)
     game_page = data.read()
     game_page = game_page.decode("utf8", "replace")
-    if game_page.find("error") != -1 or game_page.find("padT20") != -1:
+    if max([game_page.find("error"),game_page.find("padT20"),game_page.find("loginRu")]) != -1:
         _login(mirror)
         return view_game(request, code)
 
