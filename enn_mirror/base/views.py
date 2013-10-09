@@ -66,8 +66,11 @@ def view_game(request, code):
         return view_game(request, code)
 
     if not mirror.is_sturm:
-        mirror.current_level = re.search("\?level=\d+", game_page).group()[7:]
-        mirror.save()
+        try:
+            mirror.current_level = re.search("\?level=\d+", game_page).group()[7:]
+            mirror.save()
+        except:
+            mirror.is_sturm=True
 
     lust_script_pos = game_page.rfind("</script>")+45
 
