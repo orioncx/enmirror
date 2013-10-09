@@ -1,38 +1,20 @@
+import cookielib
+from django.core import serializers
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.views.decorators.csrf import csrf_exempt
+import simplejson
+from enn_mirror.base.models import _login, headers
 from forms import MirrorAdminForm
-from models import MirrorObject
-import urllib,cookielib
+from models import MirrorObject, TempMirror, Key
+import urllib
 import urllib2
-import re
 
 
-cj = cookielib.LWPCookieJar("c_cookie.txt")
-opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-urllib2.install_opener(opener)
 
+# opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 
-headers = {'User-Agent' : 'Mozilla/5.0 (X11; XUbuntu; Linux x86_64; rv:16.0) Gecko/20100101 Firefox/16.0', }
-
-
-def _login(model):
-    host = "".join(['http://%s/Login.aspx'%model.domain,'?return=%2FDefault.aspx&lang=ru'])
-    ddlNetwork = 1
-    if model.domain.find("quest.ua")!=-1: #not sure that is that required
-        ddlNetwork = 2
-    post = urllib.urlencode({'Login' : '%s'%model.login,
-                                     'password' : '%s'%model.password,
-                                     'ddlNetwork' : ddlNetwork, #not sure that is that required
-                                     'btnLogin' : 0})
-    conn = urllib2.Request(host, post, headers)
-    data=urllib2.urlopen(conn)
-    game_page = data.read()
-    game_page = game_page.decode("utf8","replace")
-    if game_page.find("error")!=-1:
-        return 1
-    cj.save(filename="enn_mirror/cookies/%s.txt"%model.code)
-    return 0
 
 @csrf_exempt
 def admin(request):
@@ -47,20 +29,83 @@ def admin(request):
             message = "Successfully created."
         else:
             message = "Create fail. Please check domain availability, game id and login\pass"
-    return TemplateResponse(request,template="en_mirror/admin.html",context={"form":form,"message":message})
+    return TemplateResponse(request, template="en_mirror/admin.html", context={"form":form,"message":message})
+
 
 @csrf_exempt
-def view_game(request,code):
-    mirror = MirrorObject.objects.get(code=code)
-    host = "http://%s/gameengines/encounter/play/%s?%s"%(mirror.domain,mirror.game_id,urllib.urlencode(request.GET))
-    cj.load(filename="enn_mirror/cookies/%s.txt"%mirror.code)
-    conn = urllib2.Request(host, (urllib.urlencode(request.POST) or None), headers)
-    data = urllib2.urlopen(conn)
+def view_game(request, code):
+    mirror = get_object_or_404(MirrorObject, code=code)
+    host = "http://%s/gameengines/encounter/play/%s/?%s" % (mirror.domain, mirror.game_id, urllib.urlencode(request.GET))
+    cj = cookielib.MozillaCookieJar(filename="enn_mirror/cookies/%s.txt" % mirror.code)
+    cj.load(ignore_discard=True, ignore_expires=True)
+
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+    post_arr = request.POST.items()
+    post_dict = {}
+    print dict(post_arr)
+    for i in post_arr:
+        post_dict.update({i[0]: i[1].encode('utf8')})
+
+    # post_dict.update({'Login': '%s' % mirror.login,
+    #                   'password': '%s' % mirror.password,
+    #                   'btnLogin': 0})
+
+    headers.update({"Referer": "http://%s/gameengines/encounter/play/%s/" % (mirror.domain, mirror.game_id),
+                    "Host": "%s" % mirror.domain, })
+    conn = urllib2.Request(host, (urllib.urlencode(post_dict) or None), headers)
+
+    data = opener.open(conn)
+    cj.save(ignore_discard=True, ignore_expires=True)
     game_page = data.read()
-    game_page = game_page.decode("utf8","replace").replace("/GameStat.aspx?gid=%s"%mirror.game_id,"http://%s/GameStat.aspx?gid=%s"%(mirror.domain,mirror.game_id)).replace("/gameengines/encounter/play/%s/"%mirror.game_id,"")
+    game_page = game_page.decode("utf8", "replace")
+    game_page = game_page.replace("/GameStat.aspx?gid=%s" % mirror.game_id,
+                                  "http://%s/GameStat.aspx?gid=%s" % (
+                                      mirror.domain, mirror.game_id)) \
+        .replace(
+        "/gameengines/encounter/play/%s/" % mirror.game_id, "") \
+        .replace("/LevelStat.aspx", "http://%s/LevelStat.aspx" % mirror.domain)
 
-
-    if game_page.find("error")!=-1 or game_page.find("padT20")!=-1:
+    if game_page.find("error") != -1 or game_page.find("padT20") != -1:
         _login(mirror)
-        return view_game(request,code)
-    return HttpResponse(game_page)
+        return view_game(request, code)
+    response = HttpResponse(game_page)
+    return response
+
+
+@csrf_exempt
+def dyn_mirror(request):
+    r_dict = {}
+    mirr = TempMirror.objects.all()[0]
+    mirr.content = request.POST.get("content", " ")
+    mirr.history = request.POST.get("history", " ")
+    mirr.save()
+    r_dict = {}
+    if Key.objects.filter(sent=False).count():
+        keys = Key.objects.filter(sent=False)
+        keys_arr = [key.value for key in keys]
+        r_dict["key_arr"] = keys_arr
+        keys.update(sent=True)
+    json = simplejson.dumps(r_dict, ensure_ascii=False)
+    response = HttpResponse(json, mimetype="application/json")
+    XS_SHARING_ALLOWED_ORIGINS = "chrome-extension://ookhjnjamhmchjfofoojpdmgimpehhei"
+    XS_SHARING_ALLOWED_METHODS = ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE']
+    response['Access-Control-Allow-Origin'] = XS_SHARING_ALLOWED_ORIGINS
+    response['Access-Control-Allow-Methods'] = ",".join(XS_SHARING_ALLOWED_METHODS)
+    response[
+        'Access-Control-Allow-Headers'] = "Content-Type, Depth, User-Agent, X-File-Size, X-Requested-With, If-Modified-Since, X-File-Name, Cache-Control"
+    return response
+
+
+def mirror(request):
+    mirr = TempMirror.objects.all()[0]
+
+    return TemplateResponse(request, template="en_mirror/mirror.html",
+                            context={"content": urllib.unquote(mirr.content.encode('ascii')).decode("utf8"), "history": urllib.unquote(mirr.history.encode('ascii')).decode("utf8")})
+
+@csrf_exempt
+def gen_new_key(request):
+    key = Key()
+    key.value = request.POST.get("answer", None)
+    if key.value:
+        key.save()
+    return HttpResponse("Ok")

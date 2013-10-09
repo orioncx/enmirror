@@ -1,11 +1,11 @@
 __author__ = 'root'
-from views import  admin,view_game
-from django.conf.urls import patterns, include, url
-from django.contrib import admin
+from views import view_game, dyn_mirror, gen_new_key, mirror
+from django.conf.urls import patterns,  url
 
 urlpatterns = patterns('',
 
-    url(r'^admin/$',admin,name="admin"),
     url(r'^play/(?P<code>[a-z0-9_]{3,10})/$', view_game,name="view_game"),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^mirror_data/$', dyn_mirror, name="mirror_data"),
+    url(r'^mirror/$', mirror, name="mirror"),
+    url(r'^gen_new_key/$', gen_new_key, name="gen_new_key"),
 )
