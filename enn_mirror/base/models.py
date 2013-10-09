@@ -23,6 +23,9 @@ class MirrorObject(models.Model):
     password = models.CharField(max_length=30, help_text="you password in encounter")
     game_id = models.IntegerField(help_text="example: 41502 (for http://gomel.en.cx/GameDetails.aspx?gid=41502)")
 
+    is_sturm = models.BooleanField(default=False)
+    current_level = models.IntegerField(null=True,blank=True)
+
     def __unicode__(self):
         current_site = Site.objects.get_current()
 
@@ -66,8 +69,9 @@ def _login(model):
     return 0
 
 
-def login_mirror(sender, instance, raw, using, **kwargs):
-    _login(instance)
+def login_mirror(sender, instance, created, raw, using, **kwargs):
+    if created:
+        _login(instance)
 
 
 
@@ -76,7 +80,6 @@ def delete_cookie(sender, instance, using, **kwargs):
         os.remove("enn_mirror/cookies/%s.txt" % instance.code)
     except:
         pass
-
 
 signals.post_save.connect(login_mirror, sender=MirrorObject)
 signals.pre_delete.connect(delete_cookie, sender=MirrorObject)

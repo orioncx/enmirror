@@ -1,4 +1,5 @@
 import cookielib
+import re
 from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -10,6 +11,9 @@ from forms import MirrorAdminForm
 from models import MirrorObject, TempMirror, Key
 import urllib
 import urllib2
+import time
+
+from page_replace import get_auto_refresh_code
 
 
 
@@ -42,7 +46,6 @@ def view_game(request, code):
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
     post_arr = request.POST.items()
     post_dict = {}
-    print dict(post_arr)
     for i in post_arr:
         post_dict.update({i[0]: i[1].encode('utf8')})
 
@@ -58,6 +61,16 @@ def view_game(request, code):
     cj.save(ignore_discard=True, ignore_expires=True)
     game_page = data.read()
     game_page = game_page.decode("utf8", "replace")
+    if game_page.find("error") != -1 or game_page.find("padT20") != -1:
+        _login(mirror)
+        return view_game(request, code)
+
+    if not mirror.is_sturm:
+        mirror.current_level = re.search("\?level=\d+", game_page).group()[7:]
+        mirror.save()
+
+    lust_script_pos = game_page.rfind("</script>")+45
+
     game_page = game_page.replace("/GameStat.aspx?gid=%s" % mirror.game_id,
                                   "http://%s/GameStat.aspx?gid=%s" % (
                                       mirror.domain, mirror.game_id)) \
@@ -65,11 +78,12 @@ def view_game(request, code):
         "/gameengines/encounter/play/%s/" % mirror.game_id, "") \
         .replace("/LevelStat.aspx", "http://%s/LevelStat.aspx" % mirror.domain)\
         .replace("/GameDetails.aspx?gid=", "http://%s/GameDetails.aspx?gid=" % mirror.domain)\
-        .replace("/guestbook/messages.aspx?topic=", "http://%s/guestbook/messages.aspx?topic=" % mirror.domain)\
+        .replace("/guestbook/messages.aspx?topic=", "http://%s/guestbook/messages.aspx?topic=" % mirror.domain)
+    if not mirror.is_sturm:
+        game_page = "%s"%get_auto_refresh_code(code, mirror.current_level)\
+        .join([game_page[:lust_script_pos], game_page[lust_script_pos:]])
+    # game_page = "<-->".join([game_page[:lust_script_pos], game_page[lust_script_pos:]])
 
-    if game_page.find("error") != -1 or game_page.find("padT20") != -1:
-        _login(mirror)
-        return view_game(request, code)
     response = HttpResponse(game_page)
     return response
 
@@ -111,3 +125,16 @@ def gen_new_key(request):
     if key.value:
         key.save()
     return HttpResponse("Ok")
+
+
+def auto_up(request, code, level_id):
+    timeout = 60 * 3
+    while timeout:
+        mirror = get_object_or_404(MirrorObject, code=code)
+        if str(level_id) == str(mirror.current_level):
+            time.sleep(1)
+            timeout -= 1
+        else:
+            return HttpResponse(mirror.current_level)
+
+    return HttpResponse(level_id)
