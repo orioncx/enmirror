@@ -61,7 +61,7 @@ def view_game(request, code):
     cj.save(ignore_discard=True, ignore_expires=True)
     game_page = data.read()
     game_page = game_page.decode("utf8", "replace")
-    if max([game_page.find("error"),game_page.find("padT20"),game_page.find("loginRu")]) != -1:
+    if max(game_page.find("error"), game_page.find("padT20"), game_page.find("loginRu")) != -1:
         _login(mirror)
         return view_game(request, code)
 
@@ -131,7 +131,7 @@ def gen_new_key(request):
 
 
 def auto_up(request, code, level_id):
-    timeout = 60 * 3
+    timeout = 60 * 4
     while timeout:
         mirror = get_object_or_404(MirrorObject, code=code)
         if str(level_id) == str(mirror.current_level):

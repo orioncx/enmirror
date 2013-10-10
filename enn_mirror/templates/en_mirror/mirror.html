@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <title>EnMirror[alpha]</title>
+    <meta name="description" content=""  />
+    <meta name="keywords" content="городская игра,  encounter, en, квест, энка, энкаунтер, схватка, фотокросс, фотоохота, дозор, dozor, геокешинг, корпоративные игры" />
+    <link rel="shortcut icon" href="http://d2.endata.cx/images/favicon.ico" />
+
+
+
+
+    <link href="http://demo.en.cx/css/v2/en/engines/engine.css?ver=1.88.0.28" type="text/css" rel="stylesheet" media="screen,projection"  />
+    <link href="http://demo.en.cx/css/v2/en/engines/real.css?ver=1.88.0.28" type="text/css" rel="stylesheet" media="screen,projection"  />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://demo.en.cx/js/v2/jQuery/ui/jquery-ui-1.7.2.core.js?ver=1.88.0.28"></script>
+    <script type="text/javascript" src="http://demo.en.cx/js/v2/cons/main.js?ver=1.88.0.28"></script>
+    <script type="text/javascript" src="http://demo.en.cx/js/v2/cons/engine.js?ver=1.88.0.28"></script>
+    <script type="text/javascript" src="http://demo.en.cx/js/v2/engines/misc.js?ver=1.88.0.28"></script>
+    <script type="text/javascript">
+        //<![CDATA[
+        var _gaq = _gaq || []; try { _gaq.push(['t0._setAccount', 'UA-1064087-1']);  _gaq.push(['t0._trackPageview']);  _gaq.push(['t0._trackPageLoadTime'])  } catch(err) {}
+        //]]>
+        $(document).ready(function(){
+            $("#main_form").submit(function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                var answ_val = $("#A").val();
+                var st=$('<li class="">'+
+{#                        'mirror:'+#}
+
+                '<a href="#">mirror--></a>'+
+
+                '<span class="">'+
+                        answ_val+
+                        '</span></li>');
+                if($(".color_incorrect",".history").size()){
+                    st.insertBefore($(".color_incorrect").parent());
+                }else{
+                    $(".history").prepend(st);
+                }
+                $.ajax({
+                    type:'post',
+                    url:"{% url gen_new_key %}",
+                    data:{"answer":answ_val}
+
+                });
+
+
+                return 0;
+            });
+        });
+
+    </script>
+
+
+</head>
+
+
+
+
+<body class="">
+<div class="container">
+    <div class="header">
+        <a href="/" class="logo"><img src="http://d2.endata.cx/images/v2/en/engines/enlogo.png" width="60" height="60" title="Encounter - международная сеть активных городских игр" alt="Encounter - международная сеть активных городских игр"></a>
+        <img src="http://d2.endata.cx/images/v2/en/engines/types/type1.gif" class="gametype" width="30" height="30" title="Мозговой штурм (одиночная)" alt="Мозговой штурм (одиночная)" />
+        <h1><a href="/GameDetails.aspx?gid=20264" id="lblGameTitle">EnMirror[alpha]</a></h1>
+
+
+
+        <ul>
+            <li class="refresh">
+                <a href="" onclick="document.location.href = document.location.href"><i></i><span>Обновить</span></a>
+            </li>
+            <li class="stats">
+                <a href="#" target="_blank"><i></i><span>Статистика</span></a>
+            </li>
+            <li class="levelstats">
+                <a href="#"><span>Стат. уровня</span>
+                </a>
+            </li>
+            <li class="discuss">
+                <a href="#"><i></i><span>Обсуждение</span></a>
+            </li>
+            <li class="mail">
+                <a href="#"><span>На почту</span></a>
+            </li>
+            <li class="print">
+                <a href="#" target="_blank"><i></i><span>На печать</span></a>
+            </li>
+        </ul>
+    </div>
+
+
+
+
+
+
+
+
+    <!--[if lte IE 7]>
+<link href="http://demo.en.cx/css/v2/en/engines/gameEngine2-lteIE7.cs" type="text/css" rel="stylesheet" media="screen,projection" />	
+<![endif]-->
+
+    <script type="text/javascript">
+        /* <![CDATA[ */
+        var ctrlToFocusId = 'Answer';
+        /* ]]> */
+    </script>
+
+
+
+
+
+    <div class="aside">
+        <a id="lnkAnswerBoxMarker"></a>
+        <form method="post" id="main_form">
+{#            <input type="hidden" name="LevelId" value="191512" />#}
+{#            <input type="hidden" name="LevelNumber" value="4" />#}
+            <input type="text" id="A" name="LevelAction.Answer" maxlength="4000" tabindex="1" hint="Введите ответ или код" value="" />
+            <label for="A">Ответы ставятся в очередь. обновите страницу через ~5c для результата.</label>
+        </form>
+
+        <div class="pane" id="this">
+            <ul class="history">
+            {{ history|safe }}
+            </ul>
+        </div>
+
+
+    </div>
+    <div class="content">
+        {{ content|safe }}
+    </div>
+
+
+
+
+
+</div><!-- container -->
+
+
+</body>
+
+
+</html>

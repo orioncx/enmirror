@@ -29,7 +29,8 @@ class MirrorObject(models.Model):
     def __unicode__(self):
         current_site = Site.objects.get_current()
 
-        return "game link: http://%s/GameDetails.aspx?gid=%s  mirror link: http://%s/play/%s/" % (self.domain,self.game_id, current_site.domain, self.code)
+        return "game link: http://%s/GameDetails.aspx?gid=%s  mirror link: http://%s/play/%s/" % (
+        self.domain, self.game_id, current_site.domain, self.code)
 
 
 class TempMirror(models.Model):
