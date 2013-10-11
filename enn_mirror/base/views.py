@@ -107,7 +107,9 @@ def view_game(request, mirror):
         game_page = "%s"%get_auto_refresh_code(mirror.code, mirror.current_level)\
         .join([game_page[:lust_script_pos], game_page[lust_script_pos:]])
     # game_page = "<-->".join([game_page[:lust_script_pos], game_page[lust_script_pos:]])
-
+    if mirror.__class__ == AutoRefreshMirror:
+        mirror.current_page = game_page
+        mirror.save()
     response = HttpResponse(game_page)
     return response
 
