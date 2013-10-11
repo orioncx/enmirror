@@ -108,7 +108,7 @@ def _server_refresh(mirror):
     cj.save(ignore_discard=True, ignore_expires=True)
     game_page = data.read()
     game_page = game_page.decode("utf8", "replace")
-    if max(game_page.find("error"), game_page.find("padT20"), game_page.find("loginRu")) != -1:
+    if max(game_page.find("error"), game_page.find("padT20"), game_page.find("loginRu"), game_page.find("txtPassword")) != -1:
         _login(mirror)
         print "relogin"
         return 1
@@ -118,7 +118,7 @@ def _server_refresh(mirror):
             mirror.save()
         except:
             mirror.is_sturm = True
-    lust_script_pos = game_page.rfind("</script>")+45
+    lust_script_pos = game_page.rfind("</script>") + 45
 
     game_page = game_page.replace("/GameStat.aspx?gid=%s" % mirror.game_id,
                                   "http://%s/GameStat.aspx?gid=%s" % (
