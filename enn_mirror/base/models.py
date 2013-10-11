@@ -142,7 +142,7 @@ def server_refresh(instance):
             LOCKS[instance.code].acquire()
             mirror = AutoRefreshMirror.objects.get(pk=instance.pk)
             _server_refresh(mirror)
-            print "refreshed-->%s"%datetime.datetime.now()
+            # print "refreshed-->%s"%datetime.datetime.now()
             LOCKS[instance.code].release()
         except: # deleted
             print "breaked"
