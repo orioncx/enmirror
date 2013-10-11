@@ -93,7 +93,7 @@ def view_game(request, mirror):
         except:
             mirror.is_sturm=True
 
-    lust_script_pos = game_page.rfind("</script>")+45
+    lust_script_pos = game_page.rfind("</script>")+47
 
     game_page = game_page.replace("/GameStat.aspx?gid=%s" % mirror.game_id,
                                   "http://%s/GameStat.aspx?gid=%s" % (
