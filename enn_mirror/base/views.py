@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.views.decorators.csrf import csrf_exempt
 import simplejson
-from enn_mirror.base.models import _login, headers
+from enn_mirror.base.models import _login, headers, AutoRefreshMirror
 from forms import MirrorAdminForm
 from models import MirrorObject, TempMirror, Key
 import urllib
@@ -36,9 +36,29 @@ def admin(request):
     return TemplateResponse(request, template="en_mirror/admin.html", context={"form":form,"message":message})
 
 
+def get_mirror_or_404(mirrorClass):
+    """
+    MirrorObject or AutoRefreshMirror
+    """
+    def decorator(func):
+        def decorated(request, code, *args, **kwargs):
+            try:
+                mirror = mirrorClass.objects.get(code=code)
+            except:
+                classes = [MirrorObject, AutoRefreshMirror]
+                classes.remove(mirrorClass)
+                otherMirrorClass = classes[0]
+                mirror = get_object_or_404(otherMirrorClass, code=code)
+            # mirror = get_object_or_404(mirrorClass, code=code)
+            return func(request, mirror, *args, **kwargs)
+        return decorated
+    return decorator
+
+
 @csrf_exempt
-def view_game(request, code):
-    mirror = get_object_or_404(MirrorObject, code=code)
+@get_mirror_or_404(MirrorObject)
+def view_game(request, mirror):
+    # mirror = get_object_or_404(MirrorObject, code=code)
     host = "http://%s/gameengines/encounter/play/%s/?%s" % (mirror.domain, mirror.game_id, urllib.urlencode(request.GET))
     cj = cookielib.MozillaCookieJar(filename="enn_mirror/cookies/%s.txt" % mirror.code)
     cj.load(ignore_discard=True, ignore_expires=True)
@@ -60,10 +80,11 @@ def view_game(request, code):
     data = opener.open(conn)
     cj.save(ignore_discard=True, ignore_expires=True)
     game_page = data.read()
+    # print len(game_page)
     game_page = game_page.decode("utf8", "replace")
     if max(game_page.find("error"), game_page.find("padT20"), game_page.find("loginRu")) != -1:
         _login(mirror)
-        return view_game(request, code)
+        return view_game(request, mirror.code)
 
     if not mirror.is_sturm:
         try:
@@ -83,13 +104,22 @@ def view_game(request, code):
         .replace("/GameDetails.aspx?gid=", "http://%s/GameDetails.aspx?gid=" % mirror.domain)\
         .replace("/guestbook/messages.aspx?topic=", "http://%s/guestbook/messages.aspx?topic=" % mirror.domain)
     if not mirror.is_sturm:
-        game_page = "%s"%get_auto_refresh_code(code, mirror.current_level)\
+        game_page = "%s"%get_auto_refresh_code(mirror.code, mirror.current_level)\
         .join([game_page[:lust_script_pos], game_page[lust_script_pos:]])
     # game_page = "<-->".join([game_page[:lust_script_pos], game_page[lust_script_pos:]])
 
     response = HttpResponse(game_page)
     return response
 
+
+@csrf_exempt
+@get_mirror_or_404(AutoRefreshMirror)
+def fast_view_game(request, mirror):
+    if len(request.POST):
+        print(request, mirror.code)
+        return view_game(request, mirror.code)
+    else:
+        return HttpResponse(mirror.current_page)
 
 @csrf_exempt
 def dyn_mirror(request):
@@ -133,7 +163,10 @@ def gen_new_key(request):
 def auto_up(request, code, level_id):
     timeout = 60 * 4
     while timeout:
-        mirror = get_object_or_404(MirrorObject, code=code)
+        try:
+            mirror = MirrorObject.objects.get(code=code)
+        except:
+            mirror = get_object_or_404(AutoRefreshMirror, code=code)
         if str(level_id) == str(mirror.current_level):
             time.sleep(1)
             timeout -= 1

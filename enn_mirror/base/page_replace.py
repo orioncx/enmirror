@@ -23,8 +23,13 @@ def get_auto_refresh_code(mirror_code, current_level):
                         autorefresh();
                     }
                 },
-                error: function () {
+                error: function (e,e1,e2) {
+                    if(e2=='NOT FOUND'){
+                    console.log('404 stop autorefresh');
+                    return 1;
+                    }else{
                     setTimeout(function(){autorefresh();},2000);
+                    }
                 }
             })
         }
