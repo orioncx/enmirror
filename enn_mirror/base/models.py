@@ -118,7 +118,10 @@ def _server_refresh(mirror):
             mirror.save()
         except:
             mirror.is_sturm = True
-    lust_script_pos = game_page.rfind("</script>") + 45
+    lust_script_pos = game_page.rfind("<script")
+    if not mirror.is_sturm:
+        game_page = "%s" % get_auto_refresh_code(mirror.code, mirror.current_level) \
+            .join([game_page[:lust_script_pos], game_page[lust_script_pos:]])
 
     game_page = game_page.replace("/GameStat.aspx?gid=%s" % mirror.game_id,
                                   "http://%s/GameStat.aspx?gid=%s" % (
@@ -128,9 +131,6 @@ def _server_refresh(mirror):
         .replace("/LevelStat.aspx", "http://%s/LevelStat.aspx" % mirror.domain) \
         .replace("/GameDetails.aspx?gid=", "http://%s/GameDetails.aspx?gid=" % mirror.domain) \
         .replace("/guestbook/messages.aspx?topic=", "http://%s/guestbook/messages.aspx?topic=" % mirror.domain)
-    if not mirror.is_sturm:
-        game_page = "%s"%get_auto_refresh_code(mirror.code, mirror.current_level) \
-            .join([game_page[:lust_script_pos], game_page[lust_script_pos:]])
     mirror.current_page = game_page
     mirror.save()
     return 0
