@@ -109,6 +109,7 @@ def _server_refresh(mirror):
     game_page = data.read()
     game_page = game_page.decode("utf8", "replace")
     if max(game_page.find("error"), game_page.find("padT20"), game_page.find("loginRu"), game_page.find("txtPassword")) != -1:
+        print game_page.find("error"), game_page.find("padT20"), game_page.find("loginRu"), game_page.find("txtPassword")
         _login(mirror)
         print "relogin"
         return 1
