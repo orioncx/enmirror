@@ -83,7 +83,6 @@ def view_game(request, mirror):
     # print len(game_page)
     game_page = game_page.decode("utf8", "replace")
     if max(game_page.find("error"), game_page.find("padT20"), game_page.find("loginRu"), game_page.find("txtPassword")) != -1:
-        pass
         _login(mirror)
         return view_game(request, mirror.code)
 
