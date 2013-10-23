@@ -69,9 +69,9 @@ def view_game(request, mirror):
     for i in post_arr:
         post_dict.update({i[0]: i[1].encode('utf8')})
 
-    post_dict.update({'Login': '%s' % mirror.login,
-                      'password': '%s' % mirror.password,
-                      'btnLogin': 0})
+    # post_dict.update({'Login': '%s' % mirror.login,
+    #                   'password': '%s' % mirror.password,
+    #                   'btnLogin': 0})
 
     headers.update({"Referer": "http://%s/gameengines/encounter/play/%s/" % (mirror.domain, mirror.game_id),
                     "Host": "%s" % mirror.domain, })
@@ -82,7 +82,7 @@ def view_game(request, mirror):
     game_page = data.read()
     # print len(game_page)
     game_page = game_page.decode("utf8", "replace")
-    if max(game_page.find("error"), game_page.find("padT20"), game_page.find("loginRu"), game_page.find("txtPassword")) != -1:
+    if max(game_page.find("padT20"), game_page.find("loginRu"), game_page.find("txtPassword")) != -1:
         _login(mirror)
         return view_game(request, mirror.code)
 

@@ -85,12 +85,13 @@ def _login(model):
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
     # urllib2.install_opener(opener)
     data = opener.open(conn)
-    cj.save(filename="enn_mirror/cookies/%s.txt" % model.code)
 
     game_page = data.read()
 
     game_page = game_page.decode("utf8", "replace")
-    if game_page.find("error") != -1:
+    if game_page.find("lnkUserName") == -1:
+        print game_page
+        print "cant login - error"
         return 1
     cj.save(filename="enn_mirror/cookies/%s.txt" % model.code, ignore_discard=True, ignore_expires=True)
     return 0
@@ -108,10 +109,8 @@ def _server_refresh(mirror):
     cj.save(ignore_discard=True, ignore_expires=True)
     game_page = data.read()
     game_page = game_page.decode("utf8", "replace")
-    if max(game_page.find("error"), game_page.find("padT20"), game_page.find("loginRu"), game_page.find("txtPassword")) != -1:
-        print game_page.find("error"), game_page.find("padT20"), game_page.find("loginRu"), game_page.find("txtPassword")
+    if max(game_page.find("padT20"), game_page.find("loginRu"), game_page.find("txtPassword")) != -1:
         _login(mirror)
-        print "relogin"
         return 1
     if not mirror.is_sturm:
         try:
