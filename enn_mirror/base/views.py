@@ -100,7 +100,7 @@ def view_game(request, mirror):
                                   "http://%s/GameStat.aspx?gid=%s" % (
                                       mirror.domain, mirror.game_id)) \
         .replace(
-        "/gameengines/encounter/play/%s/" % mirror.game_id, "/auto_play/%s/" % mirror.code \
+        "/gameengines/encounter/play/%s/" % mirror.game_id, "/auto_play/%s/" % mirror.code) \
         .replace("/LevelStat.aspx", "http://%s/LevelStat.aspx" % mirror.domain)\
         .replace("/GameDetails.aspx?gid=", "http://%s/GameDetails.aspx?gid=" % mirror.domain)\
         .replace("/guestbook/messages.aspx?topic=", "http://%s/guestbook/messages.aspx?topic=" % mirror.domain)
