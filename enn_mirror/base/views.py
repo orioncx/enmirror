@@ -94,15 +94,16 @@ def view_game(request, mirror):
             mirror.is_sturm=True
     lust_script_pos = game_page.rfind("<script")
     if not mirror.is_sturm:
-        game_page = "%s"%get_auto_refresh_code(mirror.code, mirror.current_level) \
+        game_page = "%s" % get_auto_refresh_code(mirror.code, mirror.current_level) \
             .join([game_page[:lust_script_pos], game_page[lust_script_pos:]])
     game_page = game_page.replace("/GameStat.aspx?gid=%s" % mirror.game_id,
                                   "http://%s/GameStat.aspx?gid=%s" % (
                                       mirror.domain, mirror.game_id)) \
         .replace(
-        "/gameengines/encounter/play/%s/" % mirror.game_id, "/play/%s/" % mirror.code) \
-        .replace("/LevelStat.aspx", "http://%s/LevelStat.aspx" % mirror.domain)\
-        .replace("/GameDetails.aspx?gid=", "http://%s/GameDetails.aspx?gid=" % mirror.domain)\
+        "/gameengines/encounter/play/%s/" % mirror.game_id,
+        "/%splay/%s/" % ("auto_" if mirror.__class__ == AutoRefreshMirror else "", mirror.code)) \
+        .replace("/LevelStat.aspx", "http://%s/LevelStat.aspx" % mirror.domain) \
+        .replace("/GameDetails.aspx?gid=", "http://%s/GameDetails.aspx?gid=" % mirror.domain) \
         .replace("/guestbook/messages.aspx?topic=", "http://%s/guestbook/messages.aspx?topic=" % mirror.domain)
 
     # game_page = "<-->".join([game_page[:lust_script_pos], game_page[lust_script_pos:]])
