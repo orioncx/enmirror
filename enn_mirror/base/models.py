@@ -112,14 +112,15 @@ def _server_refresh(mirror):
     if max(game_page.find("padT20"), game_page.find("loginRu"), game_page.find("txtPassword")) != -1:
         _login(mirror)
         return 1
-    if not mirror.is_sturm:
+    can_be_auto_updated = not mirror.is_sturm
+    if can_be_auto_updated:
         try:
             mirror.current_level = re.search("\?level=\d+", game_page).group()[7:]
-            mirror.save()
+            # mirror.save()
         except:
-            mirror.is_sturm = True
+            can_be_auto_updated = False
     lust_script_pos = game_page.rfind("<script")
-    if not mirror.is_sturm:
+    if can_be_auto_updated:
         game_page = "%s" % get_auto_refresh_code(mirror.code, mirror.current_level) \
             .join([game_page[:lust_script_pos], game_page[lust_script_pos:]])
 
