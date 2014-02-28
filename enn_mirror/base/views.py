@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.views.decorators.csrf import csrf_exempt
 import simplejson
-from enn_mirror.base.models import _login, headers, AutoRefreshMirror
+from enn_mirror.base.models import _login, headers, AutoRefreshMirror, LogRequest
 from forms import MirrorAdminForm
 from models import MirrorObject, TempMirror, Key
 import urllib
@@ -176,3 +176,22 @@ def auto_up(request, code, level_id):
             return HttpResponse(mirror.current_level)
 
     return HttpResponse(level_id)
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+def get_antimirror_img(request, code):
+    l = LogRequest()
+    l.user_agent = request.META.get('HTTP_USER_AGENT','no detected')
+    l.user_ip = get_client_ip(request)
+    l.num = code
+    l.save()
+    image = open('/opt/django1/apps/en_mirr/current/enmirror/xxxZXcd123123.jpeg', 'r')
+    image_data = image.read()
+    return HttpResponse(image_data, mimetype='image/jpeg')

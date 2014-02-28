@@ -24,6 +24,14 @@ headers = {'User-Agent': 'Mozilla/6.0 (X11; XUbuntu; Linux x86_64; rv:16.0) Geck
            "Connection": "keep-alive"}
 
 
+class LogRequest(models.Model):
+    num = models.IntegerField()
+    user_agent = models.CharField(max_length=2555, blank=True, null=True)
+    time = models.DateTimeField(default=datetime.datetime.now())
+    user_ip = models.CharField(max_length=255, blank=True, null=True)
+
+    def __unicode__(self):
+        return "%s --- %s" % (self.num, self.user_agent)
 
 class MirrorObjectAbstract(models.Model):
     domain = models.CharField(max_length=20, help_text="demo.en.cx")
