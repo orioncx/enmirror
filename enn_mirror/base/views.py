@@ -179,7 +179,7 @@ def auto_up(request, code, level_id):
 
 
 def get_client_ip(request):
-    ip = request.META.get('REMOTE_ADDR', 'no detect')
+    ip = request.META.get('HTTP_X_FORWARDED_FOR', 'no detect')
     return ip
 
 
