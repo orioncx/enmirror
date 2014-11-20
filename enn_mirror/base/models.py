@@ -49,7 +49,10 @@ class MirrorObjectAbstract(models.Model):
 
 class MirrorObject(MirrorObjectAbstract):
     def __unicode__(self):
-        current_site = Site.objects.get_current()
+        try:
+            current_site = Site.objects.get_current()
+        except:
+            current_site = 'migration'
 
         return "game link: http://%s/GameDetails.aspx?gid=%s  mirror link: http://%s/play/%s/" % (
             self.domain, self.game_id, current_site.domain, self.code)
@@ -61,7 +64,10 @@ class AutoRefreshMirror(MirrorObjectAbstract):
     delet = models.BooleanField(default=False)
 
     def __unicode__(self):
-        current_site = Site.objects.get_current()
+        try:
+            current_site = Site.objects.get_current()
+        except:
+            current_site = 'migration'
 
         return "game link: http://%s/GameDetails.aspx?gid=%s  mirror link: http://%s/auto_play/%s/" % (
             self.domain, self.game_id, current_site.domain, self.code)
