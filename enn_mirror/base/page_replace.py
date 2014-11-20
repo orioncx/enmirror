@@ -2,7 +2,10 @@ from django.contrib.sites.models import Site
 
 __author__ = 'orion'
 
-current_site = Site.objects.get_current()
+try:
+    current_site = Site.objects.get_current()
+except:
+    current_site = 'migration'
 def get_auto_refresh_code(mirror_code, current_level):
     auto_refresh_url = "http://%s/auto_up/%s/%s/" % (current_site.domain, mirror_code, current_level)
 
