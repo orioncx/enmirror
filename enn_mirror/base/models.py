@@ -85,6 +85,7 @@ class Key(models.Model):
 
 
 def _login(model):
+    print "start login "
     cj = cookielib.MozillaCookieJar("c_cookie.txt")
     host = "".join(['http://%s/Login.aspx' % model.domain, '?return=%2FDefault.aspx&lang=ru'])
     ddlNetwork = 1
@@ -167,6 +168,7 @@ def server_refresh(instance):
 
 
 def login_mirror(sender, instance, created, raw, using, **kwargs):
+    print "start login signal"
     if created:
         _login(instance)
     # t1 = threading.Thread(target=server_refresh, args=(instance,))
