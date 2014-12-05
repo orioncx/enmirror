@@ -94,12 +94,12 @@ def _login(model):
                              'password': '%s' % model.password,
                              'ddlNetwork': ddlNetwork, #not sure that is that required
                              'btnLogin': 0})
-
+    print "try connect "
     conn = urllib2.Request(host, post, headers)
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
     # urllib2.install_opener(opener)
     data = opener.open(conn)
-
+    print "connected "
     game_page = data.read()
 
     game_page = game_page.decode("utf8", "replace")
@@ -107,7 +107,9 @@ def _login(model):
         print game_page
         print "cant login - error"
         return 1
+    print "try cookie save"
     cj.save(filename="enn_mirror/cookies/%s.txt" % model.code, ignore_discard=True, ignore_expires=True)
+    print "cookie saved"
     return 0
 
 
