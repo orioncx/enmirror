@@ -89,11 +89,11 @@ def view_game(request, mirror):
     if can_be_auto_updated:
         try:
             mirror.current_level = re.search("\?level=\d+", game_page).group()[7:]
-            # mirror.save()
+            mirror.save()
         except:
             can_be_auto_updated=False
     lust_script_pos = game_page.rfind("<script")
-    if False:
+    if can_be_auto_updated:
         game_page = "%s" % get_auto_refresh_code(mirror.code, mirror.current_level) \
             .join([game_page[:lust_script_pos], game_page[lust_script_pos:]])
     game_page = game_page.replace("/GameStat.aspx?gid=%s" % mirror.game_id,
