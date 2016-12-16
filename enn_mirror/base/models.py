@@ -57,11 +57,25 @@ class MirrorObject(MirrorObjectAbstract):
         return "game link: http://%s/GameDetails.aspx?gid=%s  mirror link: http://%s/play/%s/" % (
             self.domain, self.game_id, current_site.domain, self.code)
 
+    def link(self):
+        try:
+            current_site = Site.objects.get_current()
+        except:
+            current_site = 'migration'
+        return "http://%s/play/%s/" % (current_site.domain, self.code)
+
 
 class AutoRefreshMirror(MirrorObjectAbstract):
     current_page = models.TextField(max_length=999999, blank=True)
     last_update = models.DateTimeField(default=datetime.datetime.now())
     delet = models.BooleanField(default=False)
+
+    def link(self):
+        try:
+            current_site = Site.objects.get_current()
+        except:
+            current_site = 'migration'
+        return "http://%s/auto_play/%s/" % (current_site.domain, self.code)
 
     def __unicode__(self):
         try:
@@ -153,6 +167,7 @@ def _server_refresh(mirror):
     mirror.save()
     return 0
 
+
 def server_refresh(instance):
     while True:
         time.sleep(1)
@@ -168,8 +183,8 @@ def server_refresh(instance):
 
 
 def login_mirror(sender, instance, created, raw, using, **kwargs):
-    print "start login signal"
     if created:
+        print 'login'
         _login(instance)
     # t1 = threading.Thread(target=server_refresh, args=(instance,))
     # t1.start()

@@ -5,3 +5,4 @@ from models import MirrorObject
 class MirrorAdminForm(forms.ModelForm):
     class Meta:
         model = MirrorObject
+        fields='__all__'
